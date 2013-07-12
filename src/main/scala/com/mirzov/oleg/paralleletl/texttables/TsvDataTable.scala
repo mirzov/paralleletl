@@ -1,14 +1,17 @@
 package com.mirzov.oleg.paralleletl.texttables
 
-import java.io.File
 import java.io.BufferedReader
+import java.io.File
 import java.io.FileReader
-import au.com.bytecode.opencsv.CSVReader
+import java.io.Reader
+import java.io.StringReader
 import scala.concurrent.ExecutionContext
+import au.com.bytecode.opencsv.CSVReader
+import java.io.InputStream
+import java.io.InputStreamReader
 
-class TsvDataTable(file: File)(implicit val exeCtxt: ExecutionContext) extends ArrayTextTable {
+class TsvDataTable(ioReader: Reader)(implicit val exeCtxt: ExecutionContext) extends ArrayTextTable {
 
-	private val ioReader = new BufferedReader(new FileReader(file))
 	private val reader = new CSVReader(ioReader, '\t')
 	
 	override val columnNames: Seq[String] = reader.readNext().toSeq
@@ -23,3 +26,16 @@ class TsvDataTable(file: File)(implicit val exeCtxt: ExecutionContext) extends A
 	}
 	
 }
+
+object TsvDataTable{
+  
+	def apply(file: File)(implicit ctxt: ExecutionContext) =
+		new TsvDataTable(new BufferedReader(new FileReader(file)))
+  
+	def apply(stream: InputStream)(implicit ctxt: ExecutionContext) =
+		new TsvDataTable(new InputStreamReader(stream))
+	
+	def apply(str: String)(implicit ctxt: ExecutionContext) =
+		new TsvDataTable(new BufferedReader(new StringReader(str)))
+}
+

@@ -7,9 +7,16 @@ import com.mirzov.oleg.paralleletl.texttables.transforms.LeftJoin
 import scala.concurrent.Future
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
+import TestHelp._
+//import com.mirzov.oleg.paralleletl.texttables.TsvDataTable
 
 class LeftJoinTest extends FunSuite {
   
+//	private val left = TsvDataTable(
+//"""A	B
+//a1	b1
+//a2	b2
+//""")
 	private val left = ArrayTextTable(Seq("A", "B"))(Seq(
 	    Array("a1", "b1"),
 	    Array("a2", "b2")
@@ -20,8 +27,6 @@ class LeftJoinTest extends FunSuite {
 	    Array("b2", "c2")
 	))
 	
-	private def wait(fut: Future[String]) = Await.result(fut, Duration.Inf)
-	
 	test("Simplest left join"){
 		val expected = ArrayTextTable(Seq("A", "B", "C"))(Seq(
 		    Array("a1", "b1", "c1"),
@@ -30,7 +35,7 @@ class LeftJoinTest extends FunSuite {
 		
 		val actual = new LeftJoin(left, right, Seq("B"), Seq("B")).getTsvString
 		
-		assert(wait(actual) === wait(expected))
+		assert(await(actual) === await(expected))
 	}
 	
 	test("Redundant right rows and orphan left rows"){
@@ -45,6 +50,6 @@ class LeftJoinTest extends FunSuite {
 		
 		val actual = new LeftJoin(left, right, Seq("B"), Seq("B")).getTsvString
 		
-		assert(wait(actual) === wait(expected))
+		assert(await(actual) === await(expected))
 	}
 }
