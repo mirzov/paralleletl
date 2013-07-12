@@ -13,7 +13,7 @@ class LeftJoin(left: TextTable, right: TextTable,
 		(implicit exc: ExecutionContext)
 		extends TextTableLeftJoinFlowSource(left, right) with TextTable{
   
-	private def getIndices(tbl: TextTable, keyCols: Seq[String]): Seq[Int] =
+	private def getIndices(tbl: TextTable, keyCols: Seq[String]): Seq[Int] = 
 		tbl.columnNames.zipWithIndex.filter(tpl => keyCols.contains(tpl._1)).map(_._2)
 		
 	private val leftIndices = getIndices(left, leftKeyCols)

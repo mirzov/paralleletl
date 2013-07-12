@@ -11,7 +11,7 @@ abstract class LeftJoinFlowSource[L,R,K<:Equals,T](left: FlowSource[L], right: F
 	def rightKey(r: R): K
 	def join(l: L, rs: Iterable[R]): Iterable[T]
 	
-	final val enum: Enumerator[T] = {
+	final lazy val enum: Enumerator[T] = {
 	  
 		val emptyMap = Map[K, Seq[R]]()
 		
