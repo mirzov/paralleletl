@@ -8,30 +8,22 @@ import scala.concurrent.Future
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import TestHelp._
-//import com.mirzov.oleg.paralleletl.texttables.TsvDataTable
+import com.mirzov.oleg.paralleletl.texttables.TsvDataTable
 
 class LeftJoinTest extends FunSuite {
   
-//	private val left = TsvDataTable(
-//"""A	B
-//a1	b1
-//a2	b2
-//""")
-	private val left = ArrayTextTable(Seq("A", "B"))(Seq(
-	    Array("a1", "b1"),
-	    Array("a2", "b2")
-	))
+	private val left = TsvDataTable("""A	B
+a1	b1
+a2	b2""")
 	
-	private val right = ArrayTextTable(Seq("B", "C"))(Seq(
-	    Array("b1", "c1"),
-	    Array("b2", "c2")
-	))
-	
+	private val right = TsvDataTable("""B	C
+b1	c1
+b2	c2""") 
+	  
 	test("Simplest left join"){
-		val expected = ArrayTextTable(Seq("A", "B", "C"))(Seq(
-		    Array("a1", "b1", "c1"),
-		    Array("a2", "b2", "c2")
-		)).getTsvString
+		val expected = TsvDataTable("""A	B	C
+a1	b1	c1
+a2	b2	c2""").getTsvString
 		
 		val actual = new LeftJoin(left, right, Seq("B"), Seq("B")).getTsvString
 		
@@ -39,10 +31,9 @@ class LeftJoinTest extends FunSuite {
 	}
 	
 	test("Redundant right rows and orphan left rows"){
-		val right = ArrayTextTable(Seq("B", "C"))(Seq(
-		    Array("b1", "c1"),
-		    Array("b3", "c3")
-		))
+		val right = TsvDataTable("""B	C
+b1	c1
+b3	c3""") 
 		val expected = ArrayTextTable(Seq("A", "B", "C"))(Seq(
 		    Array("a1", "b1", "c1"),
 		    Array("a2", "b2", LeftJoin.emptyCellValue)

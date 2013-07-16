@@ -20,17 +20,15 @@ a1	b1"""
 		val str = """A	B
 a1	b1
 a2	b2"""
-		val resFut1 = TsvDataTable(str).getTsvString
-		val res1 = await(resFut1)
-		val resFut2 = TsvDataTable(str).getTsvString
-		val res2 = await(resFut2)
+		val tbl = TsvDataTable(str)
+		await(tbl.getTsvString)
+		val res = await(tbl.getTsvString)
 
-		assert(res2 === str)
+		assert(res === str)
 	}
 	
 	test("Reading basic TSV from file"){
-		val stream = getClass.getResourceAsStream("/testtsv1.txt")
-		val tbl = TsvDataTable(stream)
+		val tbl = TsvDataTable(() => getClass.getResourceAsStream("/testtsv1.txt"))
 		val expected = """A	B
 a1	b1
 a2	b2"""
