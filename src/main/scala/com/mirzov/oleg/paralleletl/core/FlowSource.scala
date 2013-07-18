@@ -23,7 +23,7 @@ trait FlowSource[T] { self =>
 	
 	def distribute(n: Int)(implicit exc: ExecutionContext): IndexedSeq[FlowSource[T]] = -<(n)
 	def -<(n: Int)(implicit exc: ExecutionContext): IndexedSeq[FlowSource[T]] = 
-								DistributedFlowSource(this, n)
+								if(n == 1) Array(this) else DistributedFlowSource(this, n)
 }
 
 object FlowSource{

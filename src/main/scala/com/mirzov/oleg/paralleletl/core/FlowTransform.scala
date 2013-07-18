@@ -11,3 +11,15 @@ trait FlowTransform[S,T] extends FlowSource[T]{
 	final override def enum: Enumerator[T] = original.enum &> transform
 	
 }
+
+object FlowTransform{
+
+	def map[S,T](source: FlowSource[S], map: S => T): FlowSource[T] = 
+			new MappingFlowTransform(source, map)
+}
+
+private class MappingFlowTransform[S,T](override val original: FlowSource[S], map: S => T)
+												extends FlowTransform[S,T]{
+	import scala.language.reflectiveCalls
+	final override def transform = Enumeratee.map(map)
+}

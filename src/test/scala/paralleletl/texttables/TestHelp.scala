@@ -6,6 +6,6 @@ import scala.concurrent.duration.Duration
 
 object TestHelp {
 
-	def await(fut: Future[String]) = Await.result(fut, Duration.Inf)
+	def await[T](fut: Future[T]) = Await.result(fut, Duration.Inf)
 
 }
