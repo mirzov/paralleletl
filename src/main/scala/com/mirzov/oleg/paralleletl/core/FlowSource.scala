@@ -4,6 +4,7 @@ import play.api.libs.iteratee.Enumerator
 import play.api.libs.iteratee.Iteratee
 import scala.concurrent.Future
 import play.api.libs.iteratee.Enumeratee
+import scala.concurrent.ExecutionContext
 
 trait FlowSource[T] { self =>
 
@@ -19,6 +20,24 @@ trait FlowSource[T] { self =>
 	
 	def >-(other: FlowSource[T]): FlowSource[T] = new InterleavedFlowSource(self, other)
 	def interleaved(other: FlowSource[T]): FlowSource[T] = >-(other)
+	
+	def distribute(n: Int)(implicit exc: ExecutionContext): IndexedSeq[FlowSource[T]] = -<(n)
+	def -<(n: Int)(implicit exc: ExecutionContext): IndexedSeq[FlowSource[T]] = 
+								DistributedFlowSource(this, n)
 }
 
+object FlowSource{
+  
+	def apply[T](enum: Enumerator[T]): FlowSource[T] =
+		new EnumeratorBasedFlowSource(enum)
+	
+	def apply[T](t: TraversableOnce[T])(implicit exc: ExecutionContext): FlowSource[T] =
+	  	new TraversableBasedFlowSource(t)
+}
 
+private class EnumeratorBasedFlowSource[T](override val enum: Enumerator[T]) extends FlowSource[T]
+
+private class TraversableBasedFlowSource[T](t: TraversableOnce[T])(implicit exc: ExecutionContext)
+																		extends FlowSource[T] {
+	final override val enum: Enumerator[T] = Enumerator.enumerate(t)
+}
